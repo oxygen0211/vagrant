@@ -87,7 +87,7 @@ module Vagrant
             @app.call(env)
          end
          
-         @logger.debug("Checking if we have synced folders to enable")
+         @logger.info("Checking if we have synced folders to enable")
           # Once booted, setup the folder contents
           folders.each do |impl, impl_name, fs|
             if !env[:synced_folders_disable]
@@ -97,11 +97,11 @@ module Vagrant
             end
 
             # We're disabling synced folders
-             @logger.debug("Checking if we have synced folders to disable")
+             @logger.info("Checking if we have synced folders to disable")
             to_disable = {}
             fs.each do |id, data|
               next if !env[:synced_folders_disable].include?(id)
-              @logger.debug("Will disable #{id}")
+              @logger.info("Will disable #{id}")
               to_disable[id] = data
             end
 
