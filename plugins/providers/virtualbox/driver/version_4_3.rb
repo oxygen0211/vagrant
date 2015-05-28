@@ -547,8 +547,10 @@ module VagrantPlugins
         end
 
         def unshare_folders(names)
+          @logger.info("Unsharing synced folders")
           names.each do |name|
             begin
+              @logger.info("Unsharing folder #{name}")
               execute(
                 "sharedfolder", "remove", @uuid,
                 "--name", name,

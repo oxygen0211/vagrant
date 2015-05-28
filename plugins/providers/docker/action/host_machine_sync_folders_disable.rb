@@ -15,17 +15,17 @@ module VagrantPlugins
         end
 
         def call(env)
+          @logger.info("Docker host sync folder disable called")
           return @app.call(env) if !env[:machine].provider.host_vm?
 
           # Read our random ID for this instance
           id_path   = env[:machine].data_dir.join("host_machine_sfid")
+          @logger.info("Docker host id_path: #{id_path}")
           return @app.call(env) if !id_path.file?
           host_sfid = id_path.read.chomp
 
           host_machine = env[:machine].provider.host_vm
-
-          @app.call(env)
-
+          @logger.info("Will be removing synced folders on host machine #{host_sfid}")
           begin
             env[:machine].provider.host_vm_lock do
               setup_synced_folders(host_machine, host_sfid, env)
@@ -40,7 +40,7 @@ module VagrantPlugins
 
         def setup_synced_folders(host_machine, host_sfid, env)
           to_disable = []
-
+          @logger.info("Checking which folders need to be disabled")
           # Read the existing folders that are setup
           existing_folders = synced_folders(host_machine, cached: true)
           if existing_folders
@@ -48,6 +48,7 @@ module VagrantPlugins
               fs.each do |id, data|
                 if data[:docker_host_sfid] == host_sfid
                   to_disable << id
+                  @logger.info("To disable: #{id}")
                 end
               end
             end
@@ -71,6 +72,7 @@ module VagrantPlugins
             }
 
             begin
+              @logger.info("Calling action sync_folders on host machine")
               host_machine.action(:sync_folders, action_env)
             rescue Vagrant::Errors::MachineActionLockedError
               sleep 1

@@ -58,8 +58,10 @@ module VagrantPlugins
           end
 
           driver_klass = nil
+          @logger.info("Checking VirtualBox version")
           driver_map.each do |key, klass|
             if @version.start_with?(key)
+              @logger.info("Using driver for version #{@key}")
               driver_klass = klass
               break
             end

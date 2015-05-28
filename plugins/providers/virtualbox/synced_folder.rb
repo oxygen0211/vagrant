@@ -18,6 +18,7 @@ module VagrantPlugins
       end
 
       def enable(machine, folders, _opts)
+        machine.ui.output("VBox sync folder enable")
         share_folders(machine, folders, true)
 
         # short guestpaths first, so we don't step on ourselves
@@ -60,7 +61,9 @@ module VagrantPlugins
       end
 
       def disable(machine, folders, _opts)
+        machine.ui.output("VBox sync folder disable")
         if machine.guest.capability?(:unmount_virtualbox_shared_folder)
+		   machine.ui.output("Machine capable of shared folder unmount")
           folders.each do |id, data|
             machine.guest.capability(
               :unmount_virtualbox_shared_folder,
@@ -69,12 +72,16 @@ module VagrantPlugins
         end
 
         # Remove the shared folders from the VM metadata
+		machine.ui.output("Removing folders from metadata")
         names = folders.map { |id, _data| os_friendly_id(id) }
-        driver(machine).unshare_folders(names)
+		machine.ui.output("Unsharing folders")
+        machine.ui.output("Driver: #{driver(machine)}")
+		driver(machine).unshare_folders(names)
       end
 
       def cleanup(machine, opts)
-        driver(machine).clear_shared_folders if machine.id && machine.id != ""
+	    driver = driver(machine)
+		driver(machine).clear_shared_folders if machine.id && machine.id != ""
       end
 
       protected
