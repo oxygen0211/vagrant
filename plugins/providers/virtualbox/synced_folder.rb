@@ -62,6 +62,8 @@ module VagrantPlugins
 
       def disable(machine, folders, _opts)
         machine.ui.output("VBox sync folder disable")
+        machine.ui.output("Machine: #{machine}")
+        
         if machine.guest.capability?(:unmount_virtualbox_shared_folder)
 		   machine.ui.output("Machine capable of shared folder unmount")
           folders.each do |id, data|
@@ -75,7 +77,8 @@ module VagrantPlugins
 		machine.ui.output("Removing folders from metadata")
         names = folders.map { |id, _data| os_friendly_id(id) }
 		machine.ui.output("Unsharing folders")
-        machine.ui.output("Driver: #{driver(machine)}")
+        machine.ui.output("Driver: #{driver(machine).class.name}")
+        machine.ui.output("Folder names: #{names}")
 		driver(machine).unshare_folders(names)
       end
 
@@ -88,7 +91,7 @@ module VagrantPlugins
 
       # This is here so that we can stub it for tests
       def driver(machine)
-        machine.provider.driver
+        machine.provider.driver.getDriver
       end
 
       def os_friendly_id(id)

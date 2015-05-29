@@ -1,9 +1,6 @@
 require "forwardable"
-
 require "log4r"
-
 require "vagrant/util/retryable"
-
 require File.expand_path("../base", __FILE__)
 
 module VagrantPlugins
@@ -37,9 +34,9 @@ module VagrantPlugins
           begin
             @version = read_version || ""
           rescue Vagrant::Errors::CommandUnavailable,
-            Vagrant::Errors::CommandUnavailableWindows
-            # This means that VirtualBox was not found, so we raise this
-            # error here.
+          Vagrant::Errors::CommandUnavailableWindows
+          # This means that VirtualBox was not found, so we raise this
+          # error here.
             raise Vagrant::Errors::VirtualBoxNotDetected
           end
 
@@ -62,8 +59,8 @@ module VagrantPlugins
           driver_map.each do |key, klass|
             if @version.start_with?(key)
               @logger.info("Using driver for version #{@key}")
-              driver_klass = klass
-              break
+            driver_klass = klass
+            break
             end
           end
 
@@ -81,6 +78,10 @@ module VagrantPlugins
             # about it (mark the UUID as nil)
             raise VMNotFound if !@driver.vm_exists?(@uuid)
           end
+        end
+
+        def getDriver
+          return @driver
         end
 
         def_delegators :@driver, :clear_forwarded_ports,
@@ -142,7 +143,7 @@ module VagrantPlugins
           retryable(on: Vagrant::Errors::VirtualBoxVersionEmpty, tries: 3, sleep: 1) do
             output = execute("--version")
             if output =~ /vboxdrv kernel module is not loaded/ ||
-              output =~ /VirtualBox kernel modules are not loaded/i
+            output =~ /VirtualBox kernel modules are not loaded/i
               raise Vagrant::Errors::VirtualBoxKernelModuleNotLoaded
             elsif output =~ /Please install/
               # Check for installation incomplete warnings, for example:
