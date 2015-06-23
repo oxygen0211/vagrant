@@ -288,31 +288,31 @@ module VagrantPlugins
 
       # Opens an SSH connection and yields it to a block.
       def connect(**opts)
-        if @connection && !@connection.closed?
-          # There is a chance that the socket is closed despite us checking
-          # 'closed?' above. To test this we need to send data through the
-          # socket.
-          #
-          # We wrap the check itself in a 5 second timeout because there
-          # are some cases where this will just hang.
-          begin
-            Timeout.timeout(5) do
-              @connection.exec!("")
-            end
-          rescue Exception => e
-            @logger.info("Connection errored, not re-using. Will reconnect.")
-            @logger.debug(e.inspect)
-            @connection = nil
-          end
+        # if @connection && !@connection.closed?
+        #   # There is a chance that the socket is closed despite us checking
+        #   # 'closed?' above. To test this we need to send data through the
+        #   # socket.
+        #   #
+        #   # We wrap the check itself in a 5 second timeout because there
+        #   # are some cases where this will just hang.
+        #   begin
+        #     Timeout.timeout(5) do
+        #       @connection.exec!("")
+        #     end
+        #   rescue Exception => e
+        #     @logger.info("Connection errored, not re-using. Will reconnect.")
+        #     @logger.debug(e.inspect)
+        #     @connection = nil
+        #   end
 
-          # If the @connection is still around, then it is valid,
-          # and we use it.
-          if @connection
-            @logger.debug("Re-using SSH connection.")
-            return yield @connection if block_given?
-            return
-          end
-        end
+        #   # If the @connection is still around, then it is valid,
+        #   # and we use it.
+        #   if @connection
+        #     @logger.debug("Re-using SSH connection.")
+        #     return yield @connection if block_given?
+        #     return
+        #   end
+        # end
 
         # Get the SSH info for the machine, raise an exception if the
         # provider is saying that SSH is not ready.
